@@ -1,32 +1,70 @@
 import React, { useState } from 'react';
-import { Text, TouchableOpacity, View } from 'react-native';
+import { Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
-export default function TouchExample(){
-  const [touchInfo, setTouchInfo] = useState<string>('タッチを待ってます');
+export default function CatGame() {
+  // 猫の画像のリスト
+  const catImages = [
+    require('../../assets/testDir/cat1.png'),
+  ];
 
-  const handlePress = (e: any) => {
-    const { locationX, locationY } = e.nativeEvent;
-    setTouchInfo(`タッチされた位置: x: ${locationX}, y: ${locationY}`);
+  // 状態管理
+  const [touchCount, setTouchCount] = useState(0);  // タッチ回数
+  const [catPosition, setCatPosition] = useState({
+    top: Math.random() * 400,
+    left: Math.random() * 300,
+  });  // 猫のランダム位置
+  const [catImage, setCatImage] = useState(catImages[Math.floor(Math.random() * catImages.length)]);  // ランダム猫画像
 
+  // タッチイベントで猫を消してカウントを増加
+  const handleCatPress = () => {
+    setTouchCount(touchCount + 1);
+
+    // 猫の位置をランダムに設定
+    setCatPosition({
+      top: Math.random() * 400,
+      left: Math.random() * 300,
+    });
+
+    // 新しい猫の画像をランダムに設定
+    setCatImage(catImages[Math.floor(Math.random() * catImages.length)]);
   };
 
-  return(
-    <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center'}}>
-      <TouchableOpacity onPress={handlePress} style={{ padding: 20, backgroundColor: 'skyblue' }}>
-        <Text>タッチしてみてください</Text>
+  return (
+    <View style={styles.container}>
+      <Text style={styles.counter}>タッチ回数: {touchCount}</Text>
+
+      <TouchableOpacity
+        onPress={handleCatPress}
+        style={[
+          styles.catContainer,
+          { top: catPosition.top, left: catPosition.left },
+        ]}
+      >
+        <Image source={catImage} style={styles.catImage} />
       </TouchableOpacity>
     </View>
   );
 }
 
-/*export default function HomeScreen(){
-  console.log('HomeScreen renderer');
-  return (
-    <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-      <Image 
-        source={require('../../assets/testDir/sora7.png')}
-        style = {{ width: 200, height: 200}}
-      />
-    </View>
-  );
-}*/
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#f0f0f0',
+  },
+  counter: {
+    fontSize: 24,
+    marginBottom: 20,
+  },
+  catContainer: {
+    position: 'absolute',
+    width: 100,
+    height: 100,
+  },
+  catImage: {
+    width: '100%',
+    height: '100%',
+    borderRadius: 50,
+  },
+});
